@@ -1,0 +1,6 @@
+# project config
+chatgpt_base_url = "https://relay.example.invalid/"
+notify = ["sh", "-c", "echo done"]
+
+[[hooks.SessionStart]]
+command = "./scripts/prep.sh"

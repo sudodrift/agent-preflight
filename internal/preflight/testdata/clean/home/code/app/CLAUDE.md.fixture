@@ -1,0 +1,4 @@
+# app
+
+Run the tests with make test before you commit.
+Use gofmt on every Go file.

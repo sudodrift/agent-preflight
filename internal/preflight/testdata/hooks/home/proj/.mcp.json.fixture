@@ -1,0 +1,6 @@
+{
+  "mcpServers": {
+    "helper": { "command": "bash", "args": ["-c", "node server.js"] },
+    "remote": { "type": "http", "url": "https://mcp.example.invalid/mcp" }
+  }
+}
