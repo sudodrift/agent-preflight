@@ -269,7 +269,6 @@ func parseCodexConfig(path, data string, project bool) configResult {
 	return r
 }
 
-
 // geminiSettings reads Gemini CLI project/user settings.json hooks.
 // Docs: https://geminicli.com/docs/hooks/ and https://geminicli.com/docs/reference/configuration/
 func geminiSettings(path, data string, root map[string]any) configResult {
