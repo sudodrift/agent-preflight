@@ -109,8 +109,11 @@ func Scan(o Options) (*Report, *Baseline, error) {
 		switch it.kind {
 		case KindCodexConfig:
 			cr = parseCodexConfig(it.path, data, it.scope != "global")
-		case KindMCPJSON, KindVSCodeMCP, KindClaudeSettings, KindClaudeLocal, KindClaudeUserJSON, KindCodexHooks, KindCopilotMCPGlobal:
+		case KindMCPJSON, KindVSCodeMCP, KindClaudeSettings, KindClaudeLocal, KindClaudeUserJSON, KindCodexHooks, KindCopilotMCPGlobal,
+			KindGeminiSettings, KindCursorMCP, KindVSCodeTasks, KindDevcontainer:
 			cr = parseJSONConfig(it.path, it.kind, data, &f, ctx)
+		case KindInitJS, KindInitPS1:
+			cr.findings = append(cr.findings, scanInitScript(it.path, data)...)
 		}
 		r.MCPServers = append(r.MCPServers, cr.servers...)
 		r.Settings = append(r.Settings, cr.settings...)

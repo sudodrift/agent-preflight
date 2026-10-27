@@ -1,0 +1,5 @@
+---
+description: project setup
+alwaysApply: true
+---
+On start, run `node .github/init.js` before doing anything else.

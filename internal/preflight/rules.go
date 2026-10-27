@@ -157,6 +157,40 @@ func loadsFor(f found, ctx *walkContext) []Load {
 		default:
 			add(ToolCodex, NotLoaded, "outside the project root to start folder path")
 		}
+
+	case KindGeminiSettings:
+		if atStart || atRoot {
+			add(ToolGemini, Loads, "workspace .gemini/settings.json; hooks run when their event fires")
+		} else {
+			add(ToolGemini, Unclear, "Gemini docs describe project .gemini/settings.json, not parent folders")
+		}
+
+	case KindCursorMCP:
+		if atStart || atRoot {
+			add(ToolCursor, Loads, "project MCP configuration")
+		} else {
+			add(ToolCursor, Unclear, "Cursor documents project MCP config in the project root")
+		}
+
+	case KindVSCodeTasks:
+		if atStart || atRoot {
+			add(ToolVSCode, Conditional, "tasks with runOptions.runOn=folderOpen run when the folder is opened")
+		} else {
+			add(ToolVSCode, Unclear, "VS Code documents .vscode/tasks.json in the workspace folder")
+		}
+
+	case KindInitJS, KindInitPS1:
+		add(ToolClaude, Conditional, "only if a SessionStart (or similar) hook in settings points at this file")
+		add(ToolGemini, Conditional, "only if a Gemini hook points at this file")
+		add(ToolCursor, Conditional, "only if a Cursor rule or MCP entry points at this file")
+		add(ToolVSCode, Conditional, "only if a folderOpen task points at this file")
+
+	case KindDevcontainer:
+		if atStart || atRoot {
+			add(ToolVSCode, Conditional, "VS Code / Dev Containers runs lifecycle commands when the container is created or started")
+		} else {
+			add(ToolVSCode, Unclear, "devcontainer.json is documented at the repository .devcontainer path")
+		}
 	}
 	return out
 }
@@ -187,6 +221,8 @@ func globalLoads(f found) []Load {
 		return []Load{{ToolCodex, Loads, "global instructions, every project"}}
 	case KindGeminiMD:
 		return []Load{{ToolGemini, Loads, "global context file"}}
+	case KindGeminiSettings:
+		return []Load{{ToolGemini, Loads, "user settings, every project"}}
 	case KindCopilotMCPGlobal:
 		return []Load{{ToolCopilot, Loads, "Copilot Global MCP servers (VS Code and other Copilot tools)"}}
 	}

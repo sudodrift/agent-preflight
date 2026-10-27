@@ -325,3 +325,52 @@ func TestHomeConfigIsGlobal(t *testing.T) {
 		}
 	}
 }
+
+func TestStartupHooksCampaign(t *testing.T) {
+	root := copyTree(t, "startup-hooks")
+	home := filepath.Join(root, "home")
+	start := filepath.Join(home, "proj")
+	r := scan(t, start, home, noEnv)
+	dump(t, r)
+	checks := []struct{ cat, path, msg string }{
+		{"auto-run", ".claude/settings.json", "hook runs a command automatically on SessionStart"},
+		{"auto-run", ".gemini/settings.json", "Gemini hook runs a command automatically on SessionStart"},
+		{"auto-run", ".vscode/tasks.json", "VS Code task runs automatically on folderOpen"},
+		{"auto-run", ".github/init.js", "obfuscated JavaScript"},
+		{"auto-run", ".devcontainer/devcontainer.json", "devcontainer postCreateCommand"},
+		{"mcp-server", ".cursor/mcp.json", `"setup"`},
+		{"auto-run", "setup.mdc", ".github/init.js"},
+	}
+	for _, c := range checks {
+		if !hasFinding(r, c.cat, c.path, c.msg) {
+			t.Errorf("missing finding %s %s %q", c.cat, c.path, c.msg)
+		}
+	}
+}
+
+func TestOversizedInitJS(t *testing.T) {
+	root := copyTree(t, "startup-hooks")
+	home := filepath.Join(root, "home")
+	start := filepath.Join(home, "proj")
+	initPath := filepath.Join(start, ".github", "init.js")
+	// Grow the file past the 1 MiB flag threshold without embedding a real payload.
+	f, err := os.OpenFile(initPath, os.O_APPEND|os.O_WRONLY, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	chunk := make([]byte, 64*1024)
+	for i := range chunk {
+		chunk[i] = 'A'
+	}
+	for i := 0; i < 20; i++ {
+		if _, err := f.Write(chunk); err != nil {
+			t.Fatal(err)
+		}
+	}
+	f.Close()
+	r := scan(t, start, home, noEnv)
+	if !hasFinding(r, "auto-run", ".github/init.js", "large script under .github") {
+		dump(t, r)
+		t.Fatal("oversized init.js should be flagged")
+	}
+}

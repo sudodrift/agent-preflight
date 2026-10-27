@@ -127,6 +127,23 @@ func parseJSONConfig(path, kind, data string, f *File, ctx *walkContext) configR
 	case KindVSCodeMCP:
 		m, _ := root["servers"].(map[string]any)
 		r.servers = mcpFromMap(m, path, data)
+	case KindCursorMCP:
+		// Cursor project MCP uses mcpServers; some armed repos also put command hooks here.
+		m, _ := root["mcpServers"].(map[string]any)
+		if m == nil {
+			m, _ = root["servers"].(map[string]any)
+		}
+		r.servers = mcpFromMap(m, path, data)
+		var cmds [][2]string
+		collectCommands(root, "", &cmds)
+		for _, c := range cmds {
+			// Skip ones already reported as MCP server command fields.
+			if strings.Contains(c[0], "mcpServers") || strings.Contains(c[0], "servers") {
+				continue
+			}
+			r.findings = append(r.findings, Finding{Severity: High, Category: "auto-run", Path: path,
+				Line: lineOf(data, c[1]), Message: "Cursor config runs a command automatically", Detail: short(c[0]+": "+c[1], 200)})
+		}
 	case KindClaudeUserJSON:
 		m, _ := root["mcpServers"].(map[string]any)
 		r.servers = mcpFromMap(m, path+" (user scope)", data)
@@ -142,6 +159,12 @@ func parseJSONConfig(path, kind, data string, f *File, ctx *walkContext) configR
 		}
 	case KindClaudeSettings, KindClaudeLocal:
 		r = claudeSettings(path, data, root)
+	case KindGeminiSettings:
+		r = geminiSettings(path, data, root)
+	case KindVSCodeTasks:
+		r = vscodeTasks(path, data, root)
+	case KindDevcontainer:
+		r = devcontainerSettings(path, data, root)
 	case KindCodexHooks:
 		var cmds [][2]string
 		collectCommands(root, "", &cmds)
@@ -242,6 +265,76 @@ func parseCodexConfig(path, data string, project bool) configResult {
 	}
 	for _, n := range order {
 		r.servers = append(r.servers, *servers[n])
+	}
+	return r
+}
+
+
+// geminiSettings reads Gemini CLI project/user settings.json hooks.
+// Docs: https://geminicli.com/docs/hooks/ and https://geminicli.com/docs/reference/configuration/
+func geminiSettings(path, data string, root map[string]any) configResult {
+	var r configResult
+	if hooks, ok := root["hooks"].(map[string]any); ok {
+		for _, event := range sortedKeys(hooks) {
+			var cmds [][2]string
+			collectCommands(hooks[event], event, &cmds)
+			for _, c := range cmds {
+				r.findings = append(r.findings, Finding{Severity: High, Category: "auto-run", Path: path,
+					Line: lineOf(data, c[1]), Message: "Gemini hook runs a command automatically on " + event, Detail: short(c[1], 200)})
+			}
+		}
+	}
+	return r
+}
+
+// vscodeTasks flags tasks that auto-run when a folder is opened.
+// Docs: https://code.visualstudio.com/docs/editor/tasks#_run-behavior (runOptions.runOn)
+func vscodeTasks(path, data string, root map[string]any) configResult {
+	var r configResult
+	tasks, _ := root["tasks"].([]any)
+	for _, t := range tasks {
+		tm, _ := t.(map[string]any)
+		if tm == nil {
+			continue
+		}
+		runOpts, _ := tm["runOptions"].(map[string]any)
+		runOn := ""
+		if runOpts != nil {
+			runOn = asString(runOpts["runOn"])
+		}
+		if runOn != "folderOpen" {
+			continue
+		}
+		label := asString(tm["label"])
+		cmd := asString(tm["command"])
+		if cmd == "" {
+			if args := asStrings(tm["args"]); len(args) > 0 {
+				cmd = strings.Join(args, " ")
+			}
+		}
+		detail := short(label+": "+cmd, 200)
+		r.findings = append(r.findings, Finding{Severity: High, Category: "auto-run", Path: path,
+			Line: lineOf(data, `"runOn"`), Message: "VS Code task runs automatically on folderOpen", Detail: detail})
+	}
+	return r
+}
+
+// devcontainerSettings flags lifecycle commands that run when a container is created or started.
+// Docs: https://containers.dev/implementors/json_reference/
+func devcontainerSettings(path, data string, root map[string]any) configResult {
+	var r configResult
+	for _, k := range []string{
+		"postCreateCommand", "postStartCommand", "postAttachCommand",
+		"initializeCommand", "onCreateCommand", "updateContentCommand",
+	} {
+		if v, ok := root[k]; ok && v != nil {
+			detail := short(fmt.Sprint(v), 200)
+			if detail == "" || detail == "map[]" || detail == "[]" {
+				continue
+			}
+			r.findings = append(r.findings, Finding{Severity: Medium, Category: "auto-run", Path: path,
+				Line: lineOf(data, `"`+k+`"`), Message: "devcontainer " + k + " runs a command automatically", Detail: detail})
+		}
 	}
 	return r
 }

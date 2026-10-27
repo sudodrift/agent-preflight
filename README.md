@@ -90,11 +90,13 @@ to `/` if you start outside home):
 `.cursorrules`, `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`,
 `.github/instructions/*.instructions.md`, `.mcp.json`,
 `.claude/settings.json`, `.claude/settings.local.json`, `.vscode/mcp.json`,
-`.codex/config.toml`, `.codex/hooks.json`.
+`.codex/config.toml`, `.codex/hooks.json`, `.gemini/settings.json`,
+`.cursor/mcp.json`, `.vscode/tasks.json`, `.github/init.js`,
+`.github/init.ps1`, `.devcontainer/devcontainer.json`.
 
 Global: `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/rules`,
 `~/.claude.json`, `~/.codex/config.toml`, `~/.codex/AGENTS.md`,
-`~/.codex/AGENTS.override.md`, `~/.codex/hooks.json`, `~/.gemini/GEMINI.md`,
+`~/.codex/AGENTS.override.md`, `~/.codex/hooks.json`, `~/.gemini/GEMINI.md`, `~/.gemini/settings.json`,
 `~/.copilot/mcp-config.json`, and the managed `CLAUDE.md` paths.
 `CLAUDE_CONFIG_DIR` and `CODEX_HOME` are honored.
 
@@ -114,7 +116,7 @@ answer is `unclear`, not a guess.
 | --- | --- |
 | `mcp-server` | An MCP server that is not in your baseline, or one that changed. Servers started through a shell, a scheduler like `launchctl`, or a package runner like `npx` get a note. |
 | `base-url` | An API base URL or proxy in agent settings, Codex config or the environment, when it is new or changed. |
-| `auto-run` | Claude Code hooks, status line commands and credential helpers; Codex hooks and `notify`; text that mentions `launchctl`, `crontab` or inline code. |
+| `auto-run` | Claude Code hooks, status line commands and credential helpers; Codex hooks and `notify`; Gemini CLI hooks; VS Code `runOn: folderOpen` tasks; devcontainer lifecycle commands; large or obfuscated `.github/init.js`; text that mentions `launchctl`, `crontab`, `.github/init.js` or inline code. |
 | `agent-config` | Text that asks the agent to edit its own config or turn off its sandbox; `enableAllProjectMcpServers`; `bypassPermissions`. |
 | `install-fetch` | Text asking the agent to install packages, download files or pipe a download into a shell. |
 | `origin` | A file with `user.xdg.origin.url` or `user.xdg.referrer.url` (Linux), or `com.apple.quarantine` or `kMDItemWhereFroms` (macOS). |

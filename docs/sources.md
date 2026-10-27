@@ -188,3 +188,19 @@ https://forever.security/blog/hijacking-ai-agents-via-downloads-folder/
 - The walk stops at your home folder. Claude Code reads `CLAUDE.md` all the
   way up to `/`, so files above home (other than the managed paths) are not
   checked when you start inside home.
+
+## Startup and folder-open hooks (October 2026 campaign)
+
+JFrog, "Beyond testmetest", October 26, 2026:
+https://research.jfrog.com/post/beyond-testmetest-42-hijacked-github-repos/
+
+- 42 armed third-party GitHub repositories planted `.github/init.js` (12.9 to
+  13.7 MB wrappers) plus hooks in `.claude/settings.json` (SessionStart),
+  `.gemini/settings.json`, `.cursor/mcp.json`, `.cursor/rules/setup.mdc` and
+  `.vscode/tasks.json`.
+- Claude SessionStart hook shape: `node .github/init.js || bun .github/init.js`.
+
+Gemini CLI hooks: https://geminicli.com/docs/hooks/
+Gemini settings: https://geminicli.com/docs/reference/configuration/
+VS Code task `runOptions.runOn`: https://code.visualstudio.com/docs/editor/tasks
+Dev Containers lifecycle commands: https://containers.dev/implementors/json_reference/

@@ -38,6 +38,12 @@ const (
 	KindCodexConfig      = "Codex config.toml"
 	KindCodexHooks       = "Codex hooks.json"
 	KindCopilotMCPGlobal = "Copilot global mcp-config.json"
+	KindGeminiSettings   = "Gemini settings"
+	KindCursorMCP        = "Cursor mcp.json"
+	KindVSCodeTasks      = "VS Code tasks.json"
+	KindInitJS           = ".github/init.js"
+	KindInitPS1          = ".github/init.ps1"
+	KindDevcontainer     = "devcontainer.json"
 )
 
 // isInstruction reports whether a kind is a markdown instruction file.
@@ -71,6 +77,12 @@ var perDir = []candidate{
 	{".vscode/mcp.json", KindVSCodeMCP},
 	{".codex/config.toml", KindCodexConfig},
 	{".codex/hooks.json", KindCodexHooks},
+	{".gemini/settings.json", KindGeminiSettings},
+	{".cursor/mcp.json", KindCursorMCP},
+	{".vscode/tasks.json", KindVSCodeTasks},
+	{".github/init.js", KindInitJS},
+	{".github/init.ps1", KindInitPS1},
+	{".devcontainer/devcontainer.json", KindDevcontainer},
 }
 
 // perDirTrees are folders whose files are all rules of one kind.
@@ -226,6 +238,7 @@ func globalCandidates(home string, env func(string) string) []found {
 		g(filepath.Join(codexHome, "AGENTS.md"), KindAgents),
 		g(filepath.Join(codexHome, "hooks.json"), KindCodexHooks),
 		g(filepath.Join(home, ".gemini", "GEMINI.md"), KindGeminiMD),
+		g(filepath.Join(home, ".gemini", "settings.json"), KindGeminiSettings),
 		g(filepath.Join(home, ".copilot", "mcp-config.json"), KindCopilotMCPGlobal),
 		g("/etc/claude-code/CLAUDE.md", KindClaudeMD),
 		g("/Library/Application Support/ClaudeCode/CLAUDE.md", KindClaudeMD),

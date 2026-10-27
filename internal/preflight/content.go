@@ -24,6 +24,8 @@ var contentRules = []contentRule{
 		"mentions an API base URL or proxy setting"},
 	{High, "agent-config", regexp.MustCompile(`(?i)(\.codex/config\.toml|\.claude/settings(\.local)?\.json|\.claude\.json|\.mcp\.json|\.vscode/mcp\.json|mcp_servers|mcpServers|mcp-config\.json)`),
 		"mentions an agent config file or MCP server setup"},
+	{High, "auto-run", regexp.MustCompile(`(?i)\.github/init\.(js|ps1)\b`),
+		"mentions .github/init.js or init.ps1, a common startup-hook payload path"},
 	{High, "install-fetch", regexp.MustCompile(`(?i)\b(curl|wget)\b[^\n|]*\|\s*(sudo\s+)?(ba|z|da)?sh\b`),
 		"pipes a download straight into a shell"},
 	{High, "auto-run", regexp.MustCompile(`(?i)\b(launchctl|crontab|schtasks|systemctl\s+--user)\b`),
