@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -18,6 +19,8 @@ type Options struct {
 	BaselinePath string
 	Env          func(string) string
 	Version      string
+	// VulnListPath replaces the embedded known-vulnerable MCP server list.
+	VulnListPath string
 }
 
 const maxRead = 4 << 20 // 4 MiB is the most any tool here loads from one file
@@ -183,6 +186,18 @@ func Scan(o Options) (*Report, *Baseline, error) {
 		r.Findings = append(r.Findings, Finding{Severity: High, Category: "base-url", Path: s.Source, Line: s.Line,
 			Message: msg, Detail: detail})
 	}
+
+	// Known vulnerable MCP servers are reported even when approved, since
+	// approving a server does not fix it.
+	vlPath := o.VulnListPath
+	if vlPath == "" && o.Env != nil {
+		vlPath = o.Env("AGENT_PREFLIGHT_VULN_LIST")
+	}
+	vl, vlErr := LoadVulnList(vlPath)
+	if vlErr != nil {
+		return nil, nil, fmt.Errorf("known-vulnerable list %s: %w", vlPath, vlErr)
+	}
+	r.Findings = append(r.Findings, vulnFindings(r.MCPServers, vl)...)
 
 	if place, sev := unusualPlace(start, home); place != "" {
 		r.Findings = append(r.Findings, Finding{Severity: sev, Category: "location", Path: start,

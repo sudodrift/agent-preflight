@@ -204,3 +204,9 @@ Gemini CLI hooks: https://geminicli.com/docs/hooks/
 Gemini settings: https://geminicli.com/docs/reference/configuration/
 VS Code task `runOptions.runOn`: https://code.visualstudio.com/docs/editor/tasks
 Dev Containers lifecycle commands: https://containers.dev/implementors/json_reference/
+
+## Known vulnerable MCP server list (2026-10-29)
+
+- CVE records CVE-2026-117558, 117559, 117560, 117561, 117567, 117568, 117569, 117570, 117573 (VulnCheck as CNA), read from cveawg.mitre.org on 2026-10-29.
+- Severity Daily summary: https://severitydaily.com/nine-mcp-servers-command-injection-cve-2026-117558-117573-vulncheck-av-l-pr-l-eight-no-fix/
+- AWS bulletin 2026-152-AWS (CVE-2026-115413): https://aws.amazon.com/security/security-bulletins/2026-152-aws/

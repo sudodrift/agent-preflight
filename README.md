@@ -420,3 +420,30 @@ Releases are built with [GoReleaser](https://goreleaser.com) from
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Known vulnerable MCP servers
+
+Every MCP server agent-preflight finds is also compared against a small,
+dated list of servers with published vulnerabilities
+(`internal/preflight/known-vulnerable.json`, built into the binary). A match
+is reported as a `known-vulnerable` finding even if you approved the server,
+because approving a server does not patch it.
+
+Matching is by package or repository name in the command, args or URL, so a
+hit means "this looks like that project, check which version you run". It is
+not proof you are on an affected version, and a miss is not proof you are
+safe.
+
+The first list (October 29, 2026) covers the nine MCP server CVEs VulnCheck
+published on October 27 (CVE-2026-117558 to CVE-2026-117573) and the AWS API
+MCP Server token audience bug CVE-2026-115413.
+
+To use your own or a newer list:
+
+```sh
+agent-preflight --vuln-list ./my-list.json
+AGENT_PREFLIGHT_VULN_LIST=./my-list.json agent-preflight
+```
+
+The format is the same as the built-in file: an `updated` date and a list of
+entries with `id`, `name`, `match`, `affected`, `fixed`, `kind` and `ref`.

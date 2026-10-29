@@ -24,6 +24,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	approve := fs.Bool("approve", false, "record the current files, MCP servers and settings as approved")
 	state := fs.String("state", "", "baseline file (default $XDG_STATE_HOME/agent-preflight/baseline.json)")
 	home := fs.String("home", "", "home folder to stop the walk at and read global config from (default $HOME)")
+	vulnList := fs.String("vuln-list", "", "known-vulnerable MCP server list (JSON) to use instead of the built-in one (also $AGENT_PREFLIGHT_VULN_LIST)")
 	showVersion := fs.Bool("version", false, "print the version and exit")
 	fs.Usage = func() {
 		fmt.Fprintf(stderr, "usage: agent-preflight [flags] [folder]\n\n"+
@@ -59,7 +60,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 			return 2
 		}
 	}
-	r, base, err := preflight.Scan(preflight.Options{Start: start, Home: h, BaselinePath: *state, Env: os.Getenv, Version: version})
+	r, base, err := preflight.Scan(preflight.Options{Start: start, Home: h, BaselinePath: *state, Env: os.Getenv, Version: version, VulnListPath: *vulnList})
 	if err != nil {
 		fmt.Fprintln(stderr, "agent-preflight:", err)
 		return 2

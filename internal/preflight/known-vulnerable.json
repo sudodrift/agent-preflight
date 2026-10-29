@@ -1,0 +1,16 @@
+{
+  "updated": "2026-10-29",
+  "note": "Known vulnerable MCP servers. Edit this file or point AGENT_PREFLIGHT_VULN_LIST at your own copy. Each match string is compared, case-insensitive, against the server command, args and URL.",
+  "entries": [
+    {"id": "CVE-2026-117558", "name": "ai-sdlc plugin MCP server", "match": ["ai-sdlc"], "affected": "<=0.31.2", "fixed": "release containing commit 717d7ec", "kind": "command injection (repo argument into execSync)", "ref": "https://www.vulncheck.com/advisories/ai-sdlc-mcp-server-through-0.31.2-command-injection-via-check-issue-and-check-pr-status"},
+    {"id": "CVE-2026-117559", "name": "DroidMind", "match": ["droidmind"], "affected": "<=0.4.0", "fixed": "", "kind": "command injection (shell allowlist bypass)", "ref": "https://github.com/hyperb1iss/droidmind/issues/17"},
+    {"id": "CVE-2026-117560", "name": "ATXP Gemini CLI extension", "match": ["atxp"], "affected": "<=1.0.0", "fixed": "", "kind": "command injection (email or SMS text can reach $() in tool parameters)", "ref": "https://www.cve.org/CVERecord?id=CVE-2026-117560"},
+    {"id": "CVE-2026-117561", "name": "sf-mcp", "match": ["sf-mcp"], "affected": "<=1.3.2", "fixed": "", "kind": "command injection (Salesforce CLI flag values)", "ref": "https://github.com/codefriar/sf-mcp/issues/17"},
+    {"id": "CVE-2026-117567", "name": "esp-mcp", "match": ["esp-mcp"], "affected": "through commit 28afddf", "fixed": "", "kind": "command injection (create_subprocess_shell)", "ref": "https://github.com/horw/esp-mcp/issues/49"},
+    {"id": "CVE-2026-117568", "name": "mcp-ffmpeg", "match": ["mcp-ffmpeg"], "affected": "<=1.0.5", "fixed": "", "kind": "command injection (file and folder names reach child_process.exec)", "ref": "https://github.com/bitscorp-mcp/mcp-ffmpeg/issues/8"},
+    {"id": "CVE-2026-117569", "name": "Kali-GPT", "match": ["kali-gpt"], "affected": "through commit a608c74", "fixed": "", "kind": "command injection (scanner parameters, shell=True)", "ref": "https://github.com/alishahid74/kali-gpt/issues/12"},
+    {"id": "CVE-2026-117570", "name": "nmap-mcp", "match": ["nmap-mcp"], "affected": "through commit 3636afa", "fixed": "", "kind": "permissive NSE script allowlist", "ref": "https://github.com/Vorota-ai/nmap-mcp/issues/3"},
+    {"id": "CVE-2026-117573", "name": "hagent", "match": ["hagent"], "affected": "through commit 761eec6", "fixed": "", "kind": "command injection (arduino-cli and idf.py args, shell=True)", "ref": "https://github.com/masc-ucsc/hagent/issues/98"},
+    {"id": "CVE-2026-115413", "name": "AWS API MCP Server", "match": ["aws-api-mcp-server"], "affected": ">=1.3.0 <1.6.0", "fixed": "1.6.0", "kind": "OAuth token audience not checked (streamable-http with AUTH_TYPE=oauth)", "ref": "https://aws.amazon.com/security/security-bulletins/2026-152-aws/"}
+  ]
+}
